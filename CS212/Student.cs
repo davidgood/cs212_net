@@ -1,53 +1,44 @@
-namespace CS212;
+using System;
+using System.Collections.Generic;
 
-public class Student
+namespace CS212
 {
-    private readonly String _name;
-    private readonly String _id;
-    private readonly List<Grade> _grades;
+    public class Student(string name, string id, StudentType studentType) : Person(name, id)
+    {
+        private readonly Dictionary<IGradable, Grade> _grades = new();
 
-    public Student(String name, String id) {
-        _name = name;
-        _id = id;
-        _grades = new List<Grade>();
-    }
+        private StudentType StudentType => studentType;
 
-    public string getName() {
-        return _name;
-    }
+        public void AddGrade(IGradable gradable, int grade)
+        {
+            _grades[gradable] = new Grade(grade);
+        }
 
-    public string getId() {
-        return _id;
-    }
+        public int? GetGrade(IGradable gradable)
+        {
+            return _grades.TryGetValue(gradable, out var grade) ? grade.Points : null;
+        }
 
-    public void addGrade(Assignment assignment, int grade) {
-        _grades.Add(new Grade(assignment, grade));
-    }
+        protected double CalculateAverageGrade()
+        {
+            if (_grades.Count == 0) return 0;
+            var total = _grades.Values.Aggregate<Grade?, double>(0, (current, grade) => current + grade?.Points ?? 0);
+            return total / _grades.Count;
+        }
 
-    public int? getGrade(Assignment assignment) {
-        foreach (var grade in _grades) {
-            if (grade.getAssignment().Equals(assignment)) {
-                return grade.getGrade();
+        public override void SimulateApiPost()
+        {
+            Console.WriteLine("Posting student data to external system:");
+            Console.WriteLine($"Student Name: {Name}");
+            Console.WriteLine($"Student ID: {Id}");
+            Console.WriteLine($"Student Type: {StudentType}");
+
+            foreach (var entry in _grades)
+            {
+                Console.WriteLine($"Assignment: {entry.Key.Name}, Grade: {entry.Value.Points}");
             }
-        }
-        return null;
-    }
 
-    public double calculateAverageGrade() {
-        if (!_grades.Any()) return 0;
-        double total = 0;
-        foreach (var grade in _grades) {
-            total += grade.getGrade();
-        }
-        return total / _grades.Count;
-    }
-
-    public void simulateAPIPost() {
-        Console.WriteLine("SimulatingPosting student data to external system:");
-        Console.WriteLine($"Student Name: {_name}");  // <-- like python f strings.
-        Console.WriteLine($"Student ID: {_id}");
-        foreach (var grade in _grades) {
-            Console.WriteLine($"Assignment: {grade.getAssignment().getName()} Grade: {grade.getGrade()}");
+            Console.WriteLine($"Average Grade: {CalculateAverageGrade()}");
         }
     }
 }

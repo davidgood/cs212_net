@@ -1,25 +1,13 @@
 namespace CS212;
 
-public class Assignment {
-    private readonly String _name;
-    private readonly int _maxPoints;
-    private readonly String _dueDate;
+public class Assignment(string name, int maxPoints, string dueDate, AssignmentType? assignmentType)
+    : IGradable
+{
+    public string Name => name;
 
-    public Assignment(String name, int maxPoints, String dueDate) {
-        _name = name;
-        _maxPoints = maxPoints;
-        _dueDate = dueDate;
-    }
+    public int MaxPoints { get; set; } = maxPoints;
 
-    public String getName() {
-        return _name;
-    }
+    public string DueDate { get; set; } = dueDate;
 
-    public int getMaxPoints() {
-        return _maxPoints;
-    }
-
-    public String getDueDate() {
-        return _dueDate;
-    }
+    public AssignmentType? AssignmentType { get; set; } = assignmentType;
 }
